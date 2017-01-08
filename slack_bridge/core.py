@@ -48,11 +48,11 @@ class Bridge(object):
         usermap = {}
         users = self.client.api_call('users.list')
         for user in users['members']:
-            usermap[user['id']] = user['real_name']
+            usermap[user['id']] = user['name']
         return usermap
 
     def get_channels(self):
         channels = self.client.api_call('channels.list')
         for channel in channels['channels']:
             members = [self.usermap[member] for member in channel['members']]
-            print('{}:{}'.format(channel['name'], ','.join(members)))
+            print('{}: {}'.format(channel['name'], ', '.join(members)))
