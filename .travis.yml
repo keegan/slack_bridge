@@ -5,6 +5,11 @@ sudo: false
 python:
     - 3.5
 
+env:
+    global:
+        FAKE_TOKEN: "FOO"
+        secure: "SFMDlk2sWkdT5For+vMgDLHCulPfQcXTULq/Qa+ME4fY1P9oSDc65zgpzIlnGC8kC21riLqH6Bbx7WqwWlLFvCg36KqNzJWYELQe+IRapRysCCFSY3Grix0xYlMNQmMnuBwkboyrQYP+RN/KLoOv1k4n2JgcZ+4PTi6/4J9Npd6TPmuC/dhTpqjsoeo+WLI0qJbnXmtOBCWgHiPsznbe5FC+MhbwtsotC4w8yFKkiQPYjRCtIcB0de2bQRc0/JqypqytQ4w0NG0BaVQvuQcuh+DWw/xmfhOS/3wlHPlVJRmerUSu7hk1/qQTKaqp1EHnjt36jmEuuEc8SOxXbL6sNUmNM/iGltMbzJ/dhJKbihxiXacBSHsHtY7B2iZBmPi+IMjLkE6usZij1NuKr28Q8olzstjbmebOmVlj2DDqGwTt7A4DvH5/NyouHUSRIye+3Cbf12HyICQFzQE63RdFLMGXe2e41zy+WFBmNgz9MQXy9WyfPGLYfueOvQ4snKfxjXOTWmpuyWYsYqzDgUpmtkAjOuWZXkkWVRhIyrz12AQxnpdafYy6D8bwsnqU9IaGG7N7c/vd66CYscAH3htbE+COtF+R98+Xs4dkSDST4FNad/X1hoNiangGjfHaGfuLwuJxBHIAn55FCzwjYQ+UhlPrSbZVN9oC0ADRJWy7jj4="
+
 cache:
     directories:
     - $HOME/.cache/pip
@@ -16,7 +21,7 @@ install:
 
 script:
     - flake8 --max-line-length=200 .
-    - coverage run ./setup.py test
+    - coverage run ./setup.py test ${FAKE_TOKEN}
     - coverage run -a ./bridge.py
 
 after_success:
