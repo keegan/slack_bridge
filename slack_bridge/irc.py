@@ -16,11 +16,8 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-from . import irc, slack
+import irc2.client
 
-
-def init(directory: str):
-    slack_bridge = slack.SlackBridge(directory)
-    irc_bridge = irc.IrcBridge()
-    slack_bridge.get_usermap()
-    slack_bridge.get_channels()
+class IrcBridge(object):
+    def __init__(self) -> None:
+        self.client = irc2.client.IRCClientConfig("chat.freenode.net", 6697)

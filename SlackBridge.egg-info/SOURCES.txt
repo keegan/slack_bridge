@@ -1,6 +1,11 @@
+.coveragerc
 .gitignore
+.travis.yml
+BUILD
 README.md
+WORKSPACE
 bridge.py
+config.example
 setup.py
 SlackBridge.egg-info/PKG-INFO
 SlackBridge.egg-info/SOURCES.txt
@@ -9,5 +14,8 @@ SlackBridge.egg-info/entry_points.txt
 SlackBridge.egg-info/not-zip-safe
 SlackBridge.egg-info/requires.txt
 SlackBridge.egg-info/top_level.txt
+slack_bridge/BUILD
 slack_bridge/__init__.py
 slack_bridge/core.py
+slack_bridge/irc.py
+slack_bridge/slack.py
