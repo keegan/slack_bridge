@@ -1,0 +1,24 @@
+language: python
+
+sudo: false
+
+python:
+    - 3.5
+
+cache:
+    directories:
+    - $HOME/.cache/pip
+
+install:
+    - pip install .
+    - pip install git+git://github.com/fwilson42/irc2
+
+script:
+    - flake8 --max-line-length=200 .
+    - coverage run ./setup.py test
+    - coverage run -a ./bridge.py
+
+after_success:
+    - coverage xml
+    - python-codacy-coverage -r coverage.xml -c `git rev-parse HEAD^`
+    - coveralls

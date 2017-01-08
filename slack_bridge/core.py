@@ -21,6 +21,7 @@ import os
 import sys
 import json
 import slackclient
+from irc2 import client, connection
 
 
 def get_config(path: str) -> configparser.ConfigParser:
@@ -41,18 +42,20 @@ def init(directory: str):
 class Bridge(object):
     def __init__(self, directory: str) -> None:
         self.config = get_config(os.path.join(directory, 'config.cfg'))
-        self.client = slackclient.SlackClient(self.config['api']['token'])
+        self.slack_client = slackclient.SlackClient(self.config['api']['token'])
+        self.irc_connection = connection.IRCConnection()
+        self.irc_client = client.IRCClient(self.irc_connection)
         self.usermap = self.get_usermap()
 
     def get_usermap(self):
         usermap = {}
-        users = self.client.api_call('users.list')
+        users = self.slack_client.api_call('users.list')
         for user in users['members']:
             usermap[user['id']] = user['name']
         return usermap
 
     def get_channels(self):
-        channels = self.client.api_call('channels.list')
+        channels = self.slack_client.api_call('channels.list')
         for channel in channels['channels']:
             members = [self.usermap[member] for member in channel['members']]
             print('{}: {}'.format(channel['name'], ', '.join(members)))
