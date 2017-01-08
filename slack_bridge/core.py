@@ -29,10 +29,30 @@ def get_config(path: str) -> configparser.ConfigParser:
         config_obj.read_file(f)
     return config_obj
 
+def dump_response(obj: str):
+        json.dump(obj, sys.stdout, indent=True)
+        sys.stdout.write('\n')
 
 def init(directory: str):
-    config = get_config(os.path.join(directory, 'config.cfg'))
-    client = slackclient.SlackClient(config['api']['token'])
-    channels = client.api_call('channels.list')
-    json.dump(channels, sys.stdout, indent=True)
-    sys.stdout.write('\n')
+    bridge = Bridge(directory)
+    bridge.get_usermap()
+    bridge.get_channels()
+
+class Bridge(object):
+    def __init__(self, directory: str) -> None:
+        self.config = get_config(os.path.join(directory, 'config.cfg'))
+        self.client = slackclient.SlackClient(self.config['api']['token'])
+        self.usermap = self.get_usermap()
+
+    def get_usermap(self):
+        usermap = {}
+        users = self.client.api_call('users.list')
+        for user in users['members']:
+            usermap[user['id']] = user['real_name']
+        return usermap
+
+    def get_channels(self):
+        channels = self.client.api_call('channels.list')
+        for channel in channels['channels']:
+            members = [self.usermap[member] for member in channel['members']]
+            print('{}:{}'.format(channel['name'], ','.join(members)))
