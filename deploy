@@ -1,0 +1,18 @@
+#!/bin/bash
+set -e
+
+# update master
+git pull --ff-only
+
+# run tests
+flake8 .
+./setup.py test
+
+if ! [ -z "`git status --porcelain -uno`" ]; then
+    echo "Modified files found, did you forget to commit something?"
+    git status --porcelain
+    exit 1
+fi
+
+# push to github
+git push

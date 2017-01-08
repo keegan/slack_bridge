@@ -18,6 +18,10 @@
 
 import irc2.client
 
+
 class IrcBridge(object):
+
     def __init__(self) -> None:
-        self.client = irc2.client.IRCClientConfig("chat.freenode.net", 6697)
+        self.config = irc2.client.IRCClientConfig("chat.freenode.net", 6697)
+        self.config.register("msbob_slack", "msbob_slack", "Microsoft Bob")
+        self.client = self.config.configure()

@@ -16,11 +16,15 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+import asyncio
 from . import irc, slack
 
 
 def init(directory: str):
     slack_bridge = slack.SlackBridge(directory)
-    irc_bridge = irc.IrcBridge()
     slack_bridge.get_usermap()
     slack_bridge.get_channels()
+    irc_bridge = irc.IrcBridge()
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(irc_bridge.client.say('#msbob', 'memes'))
+    loop.close()
