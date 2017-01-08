@@ -1,0 +1,12 @@
+.gitignore
+bridge.py
+setup.py
+SlackBridge.egg-info/PKG-INFO
+SlackBridge.egg-info/SOURCES.txt
+SlackBridge.egg-info/dependency_links.txt
+SlackBridge.egg-info/entry_points.txt
+SlackBridge.egg-info/not-zip-safe
+SlackBridge.egg-info/requires.txt
+SlackBridge.egg-info/top_level.txt
+slack_bridge/__init__.py
+slack_bridge/core.py

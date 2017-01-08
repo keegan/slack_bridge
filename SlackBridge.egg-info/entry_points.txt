@@ -1,0 +1,3 @@
+[console_scripts]
+bridge = slack_bridge.core:init
+
