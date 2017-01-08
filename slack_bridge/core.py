@@ -30,16 +30,20 @@ def get_config(path: str) -> configparser.ConfigParser:
         config_obj.read_file(f)
     return config_obj
 
+
 def dump_response(obj: str):
-        json.dump(obj, sys.stdout, indent=True)
-        sys.stdout.write('\n')
+    json.dump(obj, sys.stdout, indent=True)
+    sys.stdout.write('\n')
+
 
 def init(directory: str):
     bridge = Bridge(directory)
     bridge.get_usermap()
     bridge.get_channels()
 
+
 class Bridge(object):
+
     def __init__(self, directory: str) -> None:
         self.config = get_config(os.path.join(directory, 'config.cfg'))
         self.slack_client = slackclient.SlackClient(self.config['api']['token'])

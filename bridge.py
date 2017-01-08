@@ -26,7 +26,7 @@ _CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 sys.path.insert(0, _CURRENT_DIR)
 
-from slack_bridge import core # noqa
+from slack_bridge import core  # noqa
 
 if __name__ == '__main__':
     core.init(_CURRENT_DIR)
