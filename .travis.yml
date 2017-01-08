@@ -21,7 +21,7 @@ install:
 
 before_script:
     - cp config.example config.cfg
-    - sed -i 's/token:/token: ${SLACK_TOKEN}' config.cfg
+    - sed -i 's/token\:/token\: ${SLACK_TOKEN}' config.cfg
 script:
     - flake8 --max-line-length=200 .
     - coverage run ./setup.py test
