@@ -16,12 +16,19 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-import irc2.client
-
+from irc2 import client, parser
 
 class IrcBridge(object):
 
-    def __init__(self) -> None:
-        self.config = irc2.client.IRCClientConfig("chat.freenode.net", 6697)
-        self.config.register("msbob_slack", "msbob_slack", "Microsoft Bob")
-        self.client = self.config.configure()
+    def __init__(self, event) -> None:
+        config = client.IRCClientConfig("chat.freenode.net", 6697)
+        config.register("msbob_slack", "msbob_slack", "Microsoft Bob")
+        config.join('#msbob')
+        self.event = event
+        self.client = config.configure()
+        # ENDOFNAMES, i.e. we've joined successfully.
+        self.client.subscribe(parser.Message(verb=366), self.on_message)
+
+    async def on_message(self, line):
+        print(line)
+        self.event.set()

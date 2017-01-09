@@ -17,10 +17,12 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import warnings
+import logging
 import os
 import sys
 
 warnings.simplefilter('default')
+logging.basicConfig(level=logging.DEBUG)
 
 _CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 
