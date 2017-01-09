@@ -26,11 +26,11 @@ event = threading.Event()
 
 def shutdown(loop, bridge):
     event.wait()
+    bridge.client.irc.shutdown()
     loop.stop()
     while loop.is_running():
         time.sleep(0.1)
     loop.close()
-    bridge.client.irc.shutdown()
 
 
 def init(directory: str):
