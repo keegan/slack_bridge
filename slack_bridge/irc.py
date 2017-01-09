@@ -18,6 +18,7 @@
 
 from irc2 import client, parser
 
+
 class IrcBridge(object):
 
     def __init__(self, event) -> None:

@@ -23,6 +23,7 @@ from . import irc, slack
 
 event = threading.Event()
 
+
 def shutdown(loop, bridge):
     event.wait()
     loop.stop()
@@ -39,5 +40,5 @@ def init(directory: str):
     irc_bridge = irc.IrcBridge(event)
     loop = asyncio.get_event_loop()
     loop.set_debug(True)
-    thread = threading.Thread(target=shutdown, args=[loop, irc_bridge]).start()
+    threading.Thread(target=shutdown, args=[loop, irc_bridge]).start()
     loop.run_forever()
