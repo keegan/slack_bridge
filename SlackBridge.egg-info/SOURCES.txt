@@ -6,6 +6,7 @@ README.md
 WORKSPACE
 bridge.py
 config.example
+deploy
 setup.py
 SlackBridge.egg-info/PKG-INFO
 SlackBridge.egg-info/SOURCES.txt

@@ -16,7 +16,7 @@ cache:
 install:
     - pip install flake8 coveralls codacy-coverage .
       # Not yet on pypi :(
-    - pip install git+git://github.com/fwilson42/irc2
+    - pip install git+git://github.com/pefoley2/irc2
 
 
 before_script:
