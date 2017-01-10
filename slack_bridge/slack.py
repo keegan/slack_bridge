@@ -21,8 +21,10 @@ import logging
 import sys
 import slackclient
 
+
 class SlackException(Exception):
     pass
+
 
 def dump_response(obj: str):
     json.dump(obj, sys.stdout, indent=True)
