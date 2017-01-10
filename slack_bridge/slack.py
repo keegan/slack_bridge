@@ -16,18 +16,9 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-import configparser
-import os
-import sys
 import json
+import sys
 import slackclient
-
-
-def get_config(path: str) -> configparser.ConfigParser:
-    config_obj = configparser.ConfigParser(interpolation=configparser.ExtendedInterpolation())
-    with open(path) as f:
-        config_obj.read_file(f)
-    return config_obj
 
 
 def dump_response(obj: str):
@@ -37,20 +28,21 @@ def dump_response(obj: str):
 
 class SlackBridge(object):
 
-    def __init__(self, directory: str) -> None:
-        self.config = get_config(os.path.join(directory, 'config.cfg'))
-        self.client = slackclient.SlackClient(self.config['api']['token'])
-        self.usermap = self.get_usermap()
+    def __init__(self, token: str) -> None:
+        self.client = slackclient.SlackClient(token)
+        self.users = self.get_usermap()
+        self.channels = self.get_channels()
 
     def get_usermap(self):
-        usermap = {}
-        users = self.client.api_call('users.list')
-        for user in users['members']:
-            usermap[user['id']] = user['name']
-        return usermap
+        users = {}
+        data = self.client.api_call('users.list')
+        for user in data['members']:
+            users[user['id']] = user['name']
+        return users
 
     def get_channels(self):
-        channels = self.client.api_call('channels.list')
-        for channel in channels['channels']:
-            members = [self.usermap[member] for member in channel['members']]
-            print('{}: {}'.format(channel['name'], ', '.join(members)))
+        channels = {}
+        data = self.client.api_call('channels.list')
+        for channel in data['channels']:
+            channels[channel['name']] = [self.users[member] for member in channel['members']]
+        return channels

@@ -16,22 +16,11 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-from irc2 import client, parser
+import configparser
 
 
-class IrcBridge(object):
-
-    def __init__(self, event, channel, nick) -> None:
-        config = client.IRCClientConfig("chat.freenode.net", 6697)
-        config.register(nick, nick, "Microsoft Bob")
-        config.join(channel)
-        self.event = event
-        self.client = config.configure()
-        # ENDOFNAMES, i.e. we've joined successfully.
-        self.client.subscribe(parser.Message(verb=366), self.on_message)
-
-    def shutdown(self):
-        self.event.set()
-
-    async def on_message(self, line):
-        print(line)
+def get_config(path: str) -> configparser.ConfigParser:
+    config_obj = configparser.ConfigParser(interpolation=configparser.ExtendedInterpolation())
+    with open(path) as f:
+        config_obj.read_file(f)
+    return config_obj

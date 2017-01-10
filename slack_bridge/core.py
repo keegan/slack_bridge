@@ -17,28 +17,44 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import asyncio
+import collections
+import os
 import time
 import threading
-from . import irc, slack
-
-event = threading.Event()
+from . import config, irc, slack
 
 
-def shutdown(loop, bridge):
-    event.wait()
-    bridge.client.irc.shutdown()
-    loop.stop()
-    while loop.is_running():
-        time.sleep(0.1)
-    loop.close()
+class Bridge(object):
+
+    def __init__(self, directory):
+        self.event = threading.Event()
+        self.config = config.get_config(os.path.join(directory, 'config.cfg'))
+        self.channels = self.config['core']['channels'].split(',')
+        self.slack = slack.SlackBridge(self.config['api']['token'])
+        self.irc = collections.defaultdict(list)
+        self.loop = asyncio.get_event_loop()
+        for channel in self.channels:
+            members = self.slack.channels.get(channel, None)
+            if members is None:
+                slack_chans = ','.join(self.slack.channels.keys())
+                raise Exception("{} not in {}".format(channel, slack_chans))
+            for nick in members:
+                self.irc[nick].append(irc.IrcBridge(self.event, '#{}'.format(channel), '{}_slack'.format(nick)))
+
+    def connect(self):
+        self.loop.set_debug(True)
+        self.loop.run_forever()
+
+    def shutdown(self):
+        # TODO(pefoley): There *has* to be a better way to do this...
+        self.event.wait()
+        self.loop.stop()
+        while self.loop.is_running():
+            time.sleep(0.1)
+        self.loop.close()
 
 
 def init(directory: str):
-    slack_bridge = slack.SlackBridge(directory)
-    slack_bridge.get_usermap()
-    slack_bridge.get_channels()
-    irc_bridge = irc.IrcBridge(event)
-    loop = asyncio.get_event_loop()
-    loop.set_debug(True)
-    threading.Thread(target=shutdown, args=[loop, irc_bridge]).start()
-    loop.run_forever()
+    bridge = Bridge(directory)
+    threading.Thread(target=bridge.shutdown).start()
+    bridge.connect()
