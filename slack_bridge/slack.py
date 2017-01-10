@@ -53,7 +53,7 @@ class SlackBridge(object):
         users = {}
         data = self.api('users.list')
         for user in data['members']:
-            users[user['id']] = user['name']
+            users[user['id']] = (user['name'], user['real_name'])
         return users
 
     def get_channels(self):

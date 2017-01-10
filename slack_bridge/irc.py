@@ -21,17 +21,19 @@ from irc2 import client, parser
 
 class IrcBridge(object):
 
-    def __init__(self, event, channel, nick) -> None:
+    def __init__(self, proxy, channel, nick, name) -> None:
         config = client.IRCClientConfig("chat.freenode.net", 6697)
-        config.register(nick, nick, "Microsoft Bob")
+        config.register(nick, nick, name)
         config.join(channel)
-        self.event = event
+        self.nick = nick
+        self.channel = channel
+        self.proxy = proxy
         self.client = config.configure()
+        self.client.subscribe(parser.Message(), self.on_message)
+
+    async def on_message(self, msg):
         # ENDOFNAMES, i.e. we've joined successfully.
-        self.client.subscribe(parser.Message(verb=366), self.on_message)
-
-    def shutdown(self):
-        self.event.set()
-
-    async def on_message(self, line):
-        print(line)
+        if msg.verb == 366:
+            print("Joined {}".format(msg))
+        elif msg.verb == "PRIVMSG":
+            self.proxy.from_irc(self.channel, self.nick, msg)
