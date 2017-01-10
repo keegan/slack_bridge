@@ -17,6 +17,7 @@ SlackBridge.egg-info/requires.txt
 SlackBridge.egg-info/top_level.txt
 slack_bridge/BUILD
 slack_bridge/__init__.py
+slack_bridge/config.py
 slack_bridge/core.py
 slack_bridge/irc.py
 slack_bridge/slack.py
