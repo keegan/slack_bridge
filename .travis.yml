@@ -25,8 +25,8 @@ before_script:
     - echo 'token = ' ${SLACK_TOKEN} >> config.cfg
 script:
     - flake8 --max-line-length=200 .
+      # TODO(pefoley): Write actual tests
     - coverage run ./setup.py test
-    - coverage run -a ./bridge.py
 
 after_success:
     - coverage xml
