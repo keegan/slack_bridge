@@ -19,6 +19,7 @@
 import asyncio
 import collections
 import os
+import logging
 import random
 import time
 import threading
@@ -33,10 +34,16 @@ class Proxy(object):
     def from_irc(self, channel, nick, msg):
         # TODO(pefoley): Make this back-and-forth less hacky.
         if nick.strip('_slack') == self.bridge.masters[channel[1:]]:
+            logging.debug(msg)
             self.bridge.slack.send(channel, msg.prefix.nick, msg.args[1])
 
-    def from_slack(self, msg):
-        print(msg)
+    def from_slack(self, channel, nick, msg):
+        self.bridge.event.wait()
+        logging.debug(msg)
+        self.bridge.irc[channel][nick].send(msg)
+
+    def schedule(self, func):
+        asyncio.run_coroutine_threadsafe(func, self.bridge.loop).result()
 
 class Bridge(object):
 
@@ -45,8 +52,8 @@ class Bridge(object):
         self.config = config.get_config(os.path.join(directory, 'config.cfg'))
         self.channels = self.config['core']['channels'].split(',')
         self.proxy = Proxy(self)
-        self.slack = slack.SlackBridge(self.config['api']['token'])
-        self.irc = collections.defaultdict(list)
+        self.slack = slack.SlackBridge(self.proxy, self.config['api']['token'])
+        self.irc = collections.defaultdict(dict)
         self.masters = {}
         self.loop = asyncio.get_event_loop()
 
@@ -59,7 +66,7 @@ class Bridge(object):
             # TODO(pefoley): Is this really the best way?
             self.masters[channel] = random.choice(members)[0]
             for nick, name in members:
-                self.irc[nick].append(irc.IrcBridge(self.proxy, '#{}'.format(channel), '{}_slack'.format(nick), name))
+                self.irc[channel][nick]= irc.IrcBridge(self.proxy, '#{}'.format(channel), '{}_slack'.format(nick), name)
 
     def irc_connect(self):
         self.loop.set_debug(True)
@@ -77,5 +84,7 @@ class Bridge(object):
 def init(directory: str):
     bridge = Bridge(directory)
     bridge.slack_connect()
+    # TODO(pefoley): Port to asyncio?
+    threading.Thread(target=bridge.slack.message_loop).start()
     threading.Thread(target=bridge.shutdown).start()
     bridge.irc_connect()

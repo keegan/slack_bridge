@@ -31,6 +31,11 @@ class IrcBridge(object):
         self.client = config.configure()
         self.client.subscribe(parser.Message(), self.on_message)
 
+    def send(self, msg):
+        import logging
+        logging.error(msg)
+        self.proxy.schedule(self.client.say(self.channel, msg))
+
     async def on_message(self, msg):
         # ENDOFNAMES, i.e. we've joined successfully.
         if msg.verb == 366:
