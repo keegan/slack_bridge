@@ -33,6 +33,8 @@ class Bridge(object):
         self.slack = slack.SlackBridge(self.config['api']['token'])
         self.irc = collections.defaultdict(list)
         self.loop = asyncio.get_event_loop()
+
+    def slack_connect(self):
         for channel in self.channels:
             members = self.slack.channels.get(channel, None)
             if members is None:
@@ -40,8 +42,9 @@ class Bridge(object):
                 raise Exception("{} not in {}".format(channel, slack_chans))
             for nick in members:
                 self.irc[nick].append(irc.IrcBridge(self.event, '#{}'.format(channel), '{}_slack'.format(nick)))
+                # self.slack.send(channel, nick, 'i like ike')
 
-    def connect(self):
+    def irc_connect(self):
         self.loop.set_debug(True)
         self.loop.run_forever()
 
@@ -56,5 +59,6 @@ class Bridge(object):
 
 def init(directory: str):
     bridge = Bridge(directory)
+    bridge.slack_connect()
     threading.Thread(target=bridge.shutdown).start()
-    bridge.connect()
+    bridge.irc_connect()
